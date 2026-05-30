@@ -24,7 +24,11 @@ public class CarWeapon : MonoBehaviour
 
         // Auto-assign muzzle and turret if not set
         if (turretPivot == null) turretPivot = transform.Find("Visuals/TurretPivot");
-        if (muzzlePoint == null) muzzlePoint = transform.Find("Visuals/TurretPivot/Turret/Muzzle");
+        if (muzzlePoint == null)
+        {
+            muzzlePoint = transform.Find("Visuals/TurretPivot/Muzzle");
+            if (muzzlePoint == null) muzzlePoint = transform.Find("Visuals/TurretPivot/Turret/Muzzle");
+        }
     }
 
     private void Update()
@@ -144,7 +148,9 @@ public class CarWeapon : MonoBehaviour
     {
         if (turretPivot != null)
         {
-            Transform turretBody = turretPivot.Find("Turret");
+            Transform turretBody = turretPivot.Find("Model_Turret");
+            if (turretBody == null) turretBody = turretPivot.Find("Turret");
+
             if (turretBody != null)
             {
                 Vector3 originalPos = turretBody.localPosition;
