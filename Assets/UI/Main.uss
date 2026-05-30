@@ -1,0 +1,37 @@
+.hud-container {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background-color: rgba(18, 18, 22, 0.75);
+    border-color: #ff6000;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 4px 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.speed-value {
+    color: #ffffff;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.speed-unit {
+    color: #ff6000;
+    font-size: 8px;
+    -unity-font-style: bold;
+    margin-top: -2px;
+}
+
+.lockon-status {
+    color: #ff6000;
+    font-size: 7px;
+    -unity-font-style: bold;
+    margin-top: 4px;
+    background-color: rgba(255, 96, 0, 0.15);
+    padding: 1px 4px;
+    border-radius: 2px;
+    border-width: 0.5px;
+    border-color: #ff6000;
+}

@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/UI/Main.uss" />
+    
+    <!-- Full-screen transparent container with picking-mode set to Ignore to allow driving click-throughs -->
+    <ui:VisualElement name="screen-root" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-end;" picking-mode="Ignore">
+        
+        <!-- Speedometer HUD Card -->
+        <ui:VisualElement name="speedometer" class="hud-container" picking-mode="Ignore">
+            <ui:Label name="speedValue" class="speed-value" text="0" />
+            <ui:Label name="speedUnit" class="speed-unit" text="KM/H" />
+            <ui:Label name="lockOnStatus" class="lockon-status" text="AUTO-DRIVE" />
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+</ui:UXML>
