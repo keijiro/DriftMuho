@@ -67,6 +67,9 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
+        // Play player damage SFX
+        SoundManager.PlayPlayerDamage(transform.position);
+
         if (currentHealth <= 0f)
         {
             Die();

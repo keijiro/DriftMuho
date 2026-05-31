@@ -4,17 +4,17 @@
     <!-- Full-screen transparent container with picking-mode set to Ignore to allow driving click-throughs -->
     <ui:VisualElement name="screen-root" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-end;" picking-mode="Ignore">
         
-        <!-- Energy (Durability) HUD Card (Bottom-Left Vertical Bar) -->
+        <!-- Energy (Durability) HUD Card (Circular Gauge) -->
         <ui:VisualElement name="energyContainer" class="energy-hud-container" picking-mode="Ignore">
-            <ui:Label text="ENERGY" class="energy-title" />
-            <ui:VisualElement name="energyBarBg" class="energy-bar-bg">
-                <ui:VisualElement name="energyBarFill" class="energy-bar-fill" />
+            <RadialGauge name="energyGauge" style="position: absolute; width: 100%; height: 100%;" line-width="12" gauge-color="#ff3c00" />
+            <ui:VisualElement class="energy-text-container" picking-mode="Ignore">
+                <ui:Label text="ENERGY" class="energy-title" />
+                <ui:Label name="energyText" text="100%" class="energy-text" />
             </ui:VisualElement>
-            <ui:Label name="energyText" text="100%" class="energy-text" />
         </ui:VisualElement>
 
-        <!-- Speedometer HUD Card -->
-        <ui:VisualElement name="speedometer" class="hud-container" picking-mode="Ignore">
+        <!-- Speedometer HUD Card (Simple Text) -->
+        <ui:VisualElement name="speedometer" class="speedometer-container" picking-mode="Ignore">
             <ui:Label name="speedValue" class="speed-value" text="0" />
             <ui:Label name="speedUnit" class="speed-unit" text="KM/H" />
         </ui:VisualElement>

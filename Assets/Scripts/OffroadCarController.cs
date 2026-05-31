@@ -60,6 +60,7 @@ public class OffroadCarController : MonoBehaviour
     // Public properties to expose wheels for visual effects
     public WheelInfo RearLeft => rearLeft;
     public WheelInfo RearRight => rearRight;
+    public float TargetCruisingSpeed => targetCruisingSpeed;
 
     // Lock-on runtime states
     public TargetDummy lockedTarget { get; private set; }

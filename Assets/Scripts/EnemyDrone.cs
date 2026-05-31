@@ -208,6 +208,9 @@ public class EnemyDrone : MonoBehaviour
         // Firing position slightly in front of the drone
         Vector3 spawnPos = transform.position + transform.forward * 0.9f;
 
+        // Play enemy shoot sound
+        SoundManager.PlayEnemyShot(spawnPos);
+
         GameObject bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         bullet.name = "DroneOrangeBullet";
         bullet.transform.position = spawnPos;

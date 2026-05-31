@@ -9,7 +9,7 @@ public class VehicleHUD : MonoBehaviour
     private PlayerHealth playerHealth;
     
     private Label speedValueLabel;
-    private VisualElement energyBarFill;
+    private RadialGauge energyGauge;
     private Label energyText;
     private VisualElement gameOverScreen;
     private VisualElement lockOnCursor;
@@ -21,7 +21,7 @@ public class VehicleHUD : MonoBehaviour
         if (uiDocument != null && uiDocument.rootVisualElement != null)
         {
             speedValueLabel = uiDocument.rootVisualElement.Q<Label>("speedValue");
-            energyBarFill = uiDocument.rootVisualElement.Q<VisualElement>("energyBarFill");
+            energyGauge = uiDocument.rootVisualElement.Q<RadialGauge>("energyGauge");
             energyText = uiDocument.rootVisualElement.Q<Label>("energyText");
             gameOverScreen = uiDocument.rootVisualElement.Q<VisualElement>("gameOverScreen");
             lockOnCursor = uiDocument.rootVisualElement.Q<VisualElement>("lockOnCursor");
@@ -38,7 +38,7 @@ public class VehicleHUD : MonoBehaviour
         {
             FindPlayerComponents();
             if (speedValueLabel != null) speedValueLabel.text = "0";
-            if (energyBarFill != null) energyBarFill.style.height = Length.Percent(0f);
+            if (energyGauge != null) energyGauge.Value = 0f;
             if (energyText != null) energyText.text = "0%";
             if (gameOverScreen != null) gameOverScreen.style.display = DisplayStyle.None;
             if (lockOnCursor != null) lockOnCursor.style.display = DisplayStyle.None;
@@ -81,13 +81,13 @@ public class VehicleHUD : MonoBehaviour
             }
         }
 
-        // 4. Update Energy (Health) bar display
+        // 4. Update Energy (Health) display
         if (playerHealth != null)
         {
             float hpPct = (playerHealth.CurrentHealth / playerHealth.MaxHealth) * 100f;
-            if (energyBarFill != null)
+            if (energyGauge != null)
             {
-                energyBarFill.style.height = Length.Percent(hpPct);
+                energyGauge.Value = playerHealth.CurrentHealth / playerHealth.MaxHealth;
             }
             if (energyText != null)
             {
@@ -111,7 +111,7 @@ public class VehicleHUD : MonoBehaviour
 
         // 6. Update the UI text
         speedValueLabel.text = Mathf.RoundToInt(speedKMH).ToString();
-    }
+        }
 
     private void FindPlayerComponents()
     {

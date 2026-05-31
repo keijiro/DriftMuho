@@ -1,4 +1,10 @@
-.hud-container {
+/* Global Font Setup */
+Label {
+    -unity-font-definition: url("project://database/Assets/UI/Jersey_10/Jersey10-Regular SDF.asset");
+}
+
+/* Speedometer HUD Card (Simple text-only) */
+.speedometer-container {
     position: absolute;
     bottom: 16px;
     right: 16px;
@@ -6,69 +12,64 @@
     border-color: #ff6000;
     border-width: 1px;
     border-radius: 4px;
-    padding: 4px 10px;
+    padding: 3px 8px;
+    width: 96px;
     align-items: center;
     justify-content: center;
+    flex-direction: row;
 }
 
 .speed-value {
     color: #ffffff;
-    font-size: 18px;
-    -unity-font-style: bold;
+    font-size: 28px;
+    width: 42px;
+    -unity-text-align: middle-right;
+    margin: 0;
+    padding: 0;
 }
 
 .speed-unit {
     color: #ff6000;
-    font-size: 8px;
-    -unity-font-style: bold;
-    margin-top: -2px;
+    font-size: 15px;
+    margin: 0;
+    padding: 0;
+    margin-left: 4px;
+    margin-top: 5px;
 }
 
-/* Energy HUD (Bottom-Left Vertical Bar) */
+/* Energy HUD (Circular Gauge) */
 .energy-hud-container {
     position: absolute;
     bottom: 16px;
     left: 16px;
-    background-color: rgba(18, 18, 22, 0.75);
-    border-color: #ff3c00;
-    border-width: 1px;
-    border-radius: 4px;
-    padding: 10px 8px;
-    width: 64px;
+    width: 108px;
+    height: 108px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(18, 18, 22, 0.4);
+    border-radius: 54px;
+}
+
+.energy-text-container {
+    position: absolute;
     align-items: center;
     justify-content: center;
 }
 
 .energy-title {
     color: #ff3c00;
-    font-size: 8px;
-    -unity-font-style: bold;
+    font-size: 19px;
     letter-spacing: 0.5px;
-    margin-bottom: 6px;
-}
-
-.energy-bar-bg {
-    background-color: rgba(255, 60, 0, 0.15);
-    border-color: #ff3c00;
-    border-width: 0.5px;
-    width: 18px;
-    height: 120px;
-    border-radius: 2px;
-    overflow: hidden;
-    justify-content: flex-end; /* Under UI Toolkit, flex-end aligns children to the bottom, causing vertical height changes to grow upwards */
-}
-
-.energy-bar-fill {
-    background-color: #ff3c00;
-    width: 100%;
-    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .energy-text {
     color: #ffffff;
-    font-size: 8px;
-    -unity-font-style: bold;
-    margin-top: 6px;
+    font-size: 34px;
+    margin: 0;
+    padding: 0;
+    margin-top: -9px;
 }
 
 /* Game Over Overlay */
@@ -86,24 +87,21 @@
 
 .gameover-title {
     color: #ff3c00;
-    font-size: 32px;
-    -unity-font-style: bold;
+    font-size: 36px;
     letter-spacing: 3px;
     margin-bottom: 2px;
 }
 
 .gameover-subtitle {
     color: #ffffff;
-    font-size: 11px;
-    -unity-font-style: bold;
+    font-size: 14px;
     letter-spacing: 2px;
     margin-bottom: 24px;
 }
 
 .gameover-reboot {
     color: #ffcc00;
-    font-size: 10px;
-    -unity-font-style: bold;
+    font-size: 12px;
     letter-spacing: 1px;
 }
 

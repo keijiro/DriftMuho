@@ -81,6 +81,9 @@ public class CarWeapon : MonoBehaviour
     {
         if (muzzlePoint == null) return;
 
+        // Play gunshot SFE
+        SoundManager.PlayGunShot(muzzlePoint.position);
+
         // Create bullet
         GameObject bulletObj;
         if (bulletPrefab != null)

@@ -19,6 +19,9 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        // Play bullet impact/hit SFX
+        SoundManager.PlayGunHit(transform.position);
+
         // Check if we hit a target dummy
         TargetDummy target = other.GetComponentInParent<TargetDummy>();
         if (target != null)
