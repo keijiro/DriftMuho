@@ -24,14 +24,97 @@
     margin-top: -2px;
 }
 
-.lockon-status {
-    color: #ff6000;
-    font-size: 7px;
+/* Energy HUD (Bottom-Left Vertical Bar) */
+.energy-hud-container {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background-color: rgba(18, 18, 22, 0.75);
+    border-color: #ff3c00;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 10px 8px;
+    width: 64px;
+    align-items: center;
+    justify-content: center;
+}
+
+.energy-title {
+    color: #ff3c00;
+    font-size: 8px;
     -unity-font-style: bold;
-    margin-top: 4px;
-    background-color: rgba(255, 96, 0, 0.15);
-    padding: 1px 4px;
-    border-radius: 2px;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.energy-bar-bg {
+    background-color: rgba(255, 60, 0, 0.15);
+    border-color: #ff3c00;
     border-width: 0.5px;
-    border-color: #ff6000;
+    width: 18px;
+    height: 120px;
+    border-radius: 2px;
+    overflow: hidden;
+    justify-content: flex-end; /* Under UI Toolkit, flex-end aligns children to the bottom, causing vertical height changes to grow upwards */
+}
+
+.energy-bar-fill {
+    background-color: #ff3c00;
+    width: 100%;
+    height: 100%;
+}
+
+.energy-text {
+    color: #ffffff;
+    font-size: 8px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+}
+
+/* Game Over Overlay */
+.gameover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(10, 10, 12, 0.9);
+    align-items: center;
+    justify-content: center;
+    display: none; /* Controlled in C# script */
+}
+
+.gameover-title {
+    color: #ff3c00;
+    font-size: 32px;
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    margin-bottom: 2px;
+}
+
+.gameover-subtitle {
+    color: #ffffff;
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+}
+
+.gameover-reboot {
+    color: #ffcc00;
+    font-size: 10px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+/* Dynamic Lock-On Cursor Overlay */
+.lockon-cursor {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    background-image: url("project://database/Assets/Sprites/LockOn.png");
+    -unity-background-image-tint-color: #ffe600; /* Bright Neon Yellow */
+    display: none;
+    margin-left: -48px;
+    margin-top: -48px;
 }

@@ -59,28 +59,9 @@ public class CarWeapon : MonoBehaviour
         }
         else
         {
-            // Simple aim towards mouse pointer on the ground
-            var mouse = Mouse.current;
-            var cam = Camera.main;
-            if (mouse != null && cam != null)
-            {
-                Vector2 mousePos = mouse.position.ReadValue();
-                Ray ray = cam.ScreenPointToRay(mousePos);
-                // Create a plane at player's height to find mouse world position
-                Plane playerPlane = new Plane(Vector3.up, transform.position);
-                if (playerPlane.Raycast(ray, out float enter))
-                {
-                    Vector3 targetPoint = ray.GetPoint(enter);
-                    Vector3 lookDir = targetPoint - turretPivot.position;
-                    lookDir.y = 0f; // Keep it on the horizontal plane
-
-                    if (lookDir.sqrMagnitude > 0.1f)
-                    {
-                        Quaternion targetRotation = Quaternion.LookRotation(lookDir);
-                        turretPivot.rotation = Quaternion.Slerp(turretPivot.rotation, targetRotation, turretRotateSpeed * Time.deltaTime);
-                    }
-                }
-            }
+            // Smoothly return turret to face forward when not locked on
+            Quaternion targetRotation = transform.rotation;
+            turretPivot.rotation = Quaternion.Slerp(turretPivot.rotation, targetRotation, turretRotateSpeed * Time.deltaTime);
         }
     }
 

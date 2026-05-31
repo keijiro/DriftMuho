@@ -39,9 +39,11 @@ public class OffroadCarController : MonoBehaviour
     [SerializeField] private float lockOnFovAngle = 120f;
     [SerializeField] private float lockOnSidewaysFrictionFront = 0.8f; // Front tires maintain some grip to pull the car
     [SerializeField] private float lockOnSidewaysFrictionRear = 0.2f;  // Rear tires slide easily to drift
-    [SerializeField] private float lockOnRadiusSpeed = 15f;           // Speed at which A/D scales the orbit radius
     [SerializeField] private float lockOnTangentialForce = 15000f;    // Maximum force used to accelerate along orbit
     [SerializeField] private float minimumDriftSpeed = 12f;          // Minimum speed to maintain during drift if entered slowly
+    [SerializeField] private float lockOnJointSpring = 40000f;        // Soft limit spring strength (higher = stiffer, closer to hard limit)
+    [SerializeField] private float lockOnJointDamper = 2000f;         // Soft limit damper (higher = less bouncing/vibration)
+    [SerializeField] private float lockOnRadiusMultiplier = 0.85f;    // Multiplier to shrink the initial target orbit radius beforehand
 
     private Rigidbody rb;
     private float motorInput;
@@ -54,6 +56,10 @@ public class OffroadCarController : MonoBehaviour
     // Original friction settings to restore upon unlock
     private float originalFrontSidewaysStiffness = 1.3f;
     private float originalRearSidewaysStiffness = 1.3f;
+
+    // Public properties to expose wheels for visual effects
+    public WheelInfo RearLeft => rearLeft;
+    public WheelInfo RearRight => rearRight;
 
     // Lock-on runtime states
     public TargetDummy lockedTarget { get; private set; }
@@ -101,21 +107,10 @@ public class OffroadCarController : MonoBehaviour
         {
             activeJoint.connectedAnchor = lockedTarget.transform.position;
 
-            // Step 1: A/D keys adjust the orbit radius limit of the ConfigurableJoint in real-time
-            if (steerInput != 0f)
-            {
-                targetOrbitRadius += steerInput * lockOnRadiusSpeed * Time.fixedDeltaTime;
-                targetOrbitRadius = Mathf.Clamp(targetOrbitRadius, lockOnMinDistance, maxLockOnDistance);
-
-                SoftJointLimit limit = new SoftJointLimit();
-                limit.limit = targetOrbitRadius;
-                activeJoint.linearLimit = limit;
-            }
-
-            // Step 2: Smooth LookAt rotation using Method A (XZ plane only to keep suspension flat)
+            // Smooth LookAt rotation using Method A (XZ plane only to keep suspension flat)
             ApplyLookAt();
 
-            // Step 3: Handle orbital/tangential propulsion to maintain the entry speed when W is pressed
+            // Handle orbital/tangential propulsion to maintain the entry speed when W is pressed
             ApplyLockOnOrbitForces();
         }
         else
@@ -291,7 +286,8 @@ public class OffroadCarController : MonoBehaviour
             {
                 lockedTarget = bestTarget;
                 // Enforce a minimum orbit radius constraint even if locking on from very close
-                targetOrbitRadius = Mathf.Max(Vector3.Distance(transform.position, lockedTarget.transform.position), lockOnMinDistance);
+                float rawRadius = Vector3.Distance(transform.position, lockedTarget.transform.position);
+                targetOrbitRadius = Mathf.Max(rawRadius * lockOnRadiusMultiplier, lockOnMinDistance);
 
                 // Create ConfigurableJoint to lock/limit starting distance in world space (one-way constraint)
                 activeJoint = gameObject.AddComponent<ConfigurableJoint>();
@@ -308,6 +304,11 @@ public class OffroadCarController : MonoBehaviour
                 SoftJointLimit limit = new SoftJointLimit();
                 limit.limit = targetOrbitRadius;
                 activeJoint.linearLimit = limit;
+
+                SoftJointLimitSpring limitSpring = new SoftJointLimitSpring();
+                limitSpring.spring = lockOnJointSpring;
+                limitSpring.damper = lockOnJointDamper;
+                activeJoint.linearLimitSpring = limitSpring;
 
                 // Adjust tire friction to slide
                 SetTireFriction(lockOnSidewaysFrictionFront, lockOnSidewaysFrictionRear);

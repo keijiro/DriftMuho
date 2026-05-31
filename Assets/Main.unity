@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.62287205, g: 0.80714536, b: 0.84400004, a: 1}
+  m_FogColor: {r: 0.99607843, g: 0.4117647, b: 0.003921569, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 50
@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 18bc352c3603045a4a2ecc7967ccc3b9, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -310,6 +310,8 @@ GameObject:
   - component: {fileID: 410612689}
   - component: {fileID: 410612688}
   - component: {fileID: 410612687}
+  - component: {fileID: 410612691}
+  - component: {fileID: 410612692}
   m_Layer: 0
   m_Name: PlayerCar
   m_TagString: Player
@@ -394,14 +396,16 @@ MonoBehaviour:
   centerOfMassOffset: {x: 0, y: -0.3, z: 0.05}
   downforce: 800
   flipThresholdTime: 2
-  maxLockOnDistance: 75
-  lockOnMinDistance: 20
+  maxLockOnDistance: 25
+  lockOnMinDistance: 3
   lockOnFovAngle: 120
   lockOnSidewaysFrictionFront: 0.8
   lockOnSidewaysFrictionRear: 0.2
-  lockOnRadiusSpeed: 15
-  lockOnTangentialForce: 15000
+  lockOnTangentialForce: 20000
   minimumDriftSpeed: 12
+  lockOnJointSpring: 32000
+  lockOnJointDamper: 1600
+  lockOnRadiusMultiplier: 0.85
 --- !u!65 &410612689
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -450,6 +454,35 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &410612691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410612685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcceaaf651c6042b48684c48f98b0fcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+--- !u!114 &410612692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410612685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecff97b6750ac43c295d56aa23d69450, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TireSmokeController
+  smokeTexture: {fileID: 2800000, guid: bb04c1f91a9034c8bba7882e10babd8e, type: 3}
+  slipThreshold: 1.8
+  maxSlipSpeed: 20
+  maxEmissionRate: 300
 --- !u!1 &430922935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,7 +1296,7 @@ Camera:
   m_GameObject: {fileID: 1411473415}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.59362763, g: 0.8106477, b: 0.8679245, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1286,8 +1319,8 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 1000
-  field of view: 20
+  far clip plane: 300
+  field of view: 50
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -1314,7 +1347,7 @@ Transform:
   m_GameObject: {fileID: 1411473415}
   serializedVersion: 2
   m_LocalRotation: {x: 0.07708283, y: 0, z: 0, w: 0.9970247}
-  m_LocalPosition: {x: 0, y: 8.4, z: -9}
+  m_LocalPosition: {x: 0, y: 8.4, z: -3.65}
   m_LocalScale: {x: 1, y: 1.0000001, z: 1.0000001}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1333,11 +1366,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarCameraFollow
   target: {fileID: 410612686}
-  distance: 9
-  height: 2.4
-  positionSmoothTime: 0.05
-  rotationSmoothTime: 0.15
+  distance: 3.5
+  height: 1.5
+  positionSmoothTime: 0.09
+  rotationSmoothTime: 0.2
   lookAtOffset: 1
+  lockOnDistanceMultiplier: 1.3
+  lockOnHeightMultiplier: 0.7
+  maxBankAngle: 8
+  bankSensitivity: 15
+  bankSmoothTime: 0.15
 --- !u!114 &1411473421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1358,16 +1396,16 @@ MonoBehaviour:
   <Color6>k__BackingField: {r: 1, g: 0.49798876, b: 0, a: 0}
   <Color7>k__BackingField: {r: 0.17007832, g: 0.735849, b: 0.735849, a: 0}
   <Color8>k__BackingField: {r: 1, g: 1, b: 1, a: 0}
-  <Color9>k__BackingField: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  <Color9>k__BackingField: {r: 1, g: 0.8735534, b: 0, a: 1}
   <Color10>k__BackingField: {r: 0.5, g: 0, b: 0, a: 1}
-  <Color11>k__BackingField: {r: 0, g: 0.5, b: 0, a: 1}
-  <Color12>k__BackingField: {r: 0.5, g: 0.5, b: 0, a: 1}
-  <Color13>k__BackingField: {r: 0, g: 0, b: 0.5, a: 1}
-  <Color14>k__BackingField: {r: 0.5, g: 0, b: 0.5, a: 1}
+  <Color11>k__BackingField: {r: 0.06363475, g: 0.20754719, b: 0.0701953, a: 1}
+  <Color12>k__BackingField: {r: 0.016153438, g: 0.103773594, b: 0.040219262, a: 1}
+  <Color13>k__BackingField: {r: 0.5882353, g: 0.43137255, b: 0.59607846, a: 1}
+  <Color14>k__BackingField: {r: 0.8901961, g: 0.2784314, b: 0.4862745, a: 1}
   <Color15>k__BackingField: {r: 0, g: 0.5, b: 0.5, a: 1}
   <Color16>k__BackingField: {r: 0.6, g: 0.6, b: 0.6, a: 1}
-  <Extended>k__BackingField: 0
-  <Dithering>k__BackingField: 0.304
+  <Extended>k__BackingField: 1
+  <Dithering>k__BackingField: 0.1
   <Downsampling>k__BackingField: 5
   <Opacity>k__BackingField: 1
   _shader: {fileID: 4800000, guid: 11e94cd5c3fe34771a02e77528668f69, type: 3}
@@ -1511,11 +1549,14 @@ MonoBehaviour:
   targetsPerChunk: 1
   targetMaterial: {fileID: 2100000, guid: 694eed6896a0844069d92522e1aa0166, type: 2}
   metalMaterial: {fileID: 2100000, guid: 37092bb728f8244dc8293147fe3d47e5, type: 2}
+  dronePrefab: {fileID: -8150428798448403706, guid: 17a78baf5320348ea8688f5fa8792d02, type: 3}
   terrainHeightMultiplier: 12
   terrainNoiseScale: 0.01
   noiseOctaves: 4
   terrainPersistence: 0.8
   terrainFloorThreshold: 0.2
+  checkerColorA: {r: 0.06363475, g: 0.20754719, b: 0.0701953, a: 1}
+  checkerColorB: {r: 0.016153438, g: 0.103773594, b: 0.040219262, a: 1}
 --- !u!4 &1696840218
 Transform:
   m_ObjectHideFlags: 0

@@ -6,8 +6,13 @@ public class VehicleHUD : MonoBehaviour
 {
     private Rigidbody carRigidbody;
     private OffroadCarController carController;
+    private PlayerHealth playerHealth;
+    
     private Label speedValueLabel;
-    private Label lockOnStatusLabel;
+    private VisualElement energyBarFill;
+    private Label energyText;
+    private VisualElement gameOverScreen;
+    private VisualElement lockOnCursor;
 
     private void Start()
     {
@@ -16,11 +21,14 @@ public class VehicleHUD : MonoBehaviour
         if (uiDocument != null && uiDocument.rootVisualElement != null)
         {
             speedValueLabel = uiDocument.rootVisualElement.Q<Label>("speedValue");
-            lockOnStatusLabel = uiDocument.rootVisualElement.Q<Label>("lockOnStatus");
+            energyBarFill = uiDocument.rootVisualElement.Q<VisualElement>("energyBarFill");
+            energyText = uiDocument.rootVisualElement.Q<Label>("energyText");
+            gameOverScreen = uiDocument.rootVisualElement.Q<VisualElement>("gameOverScreen");
+            lockOnCursor = uiDocument.rootVisualElement.Q<VisualElement>("lockOnCursor");
         }
 
         // 2. Find the Player Car and cache components
-        FindPlayerRigidbody();
+        FindPlayerComponents();
     }
 
     private void Update()
@@ -28,9 +36,12 @@ public class VehicleHUD : MonoBehaviour
         // Try to re-detect player if lost or not found initially
         if (carRigidbody == null)
         {
-            FindPlayerRigidbody();
+            FindPlayerComponents();
             if (speedValueLabel != null) speedValueLabel.text = "0";
-            if (lockOnStatusLabel != null) lockOnStatusLabel.style.display = DisplayStyle.None;
+            if (energyBarFill != null) energyBarFill.style.height = Length.Percent(0f);
+            if (energyText != null) energyText.text = "0%";
+            if (gameOverScreen != null) gameOverScreen.style.display = DisplayStyle.None;
+            if (lockOnCursor != null) lockOnCursor.style.display = DisplayStyle.None;
             return;
         }
 
@@ -38,19 +49,62 @@ public class VehicleHUD : MonoBehaviour
         {
             carController = carRigidbody.GetComponent<OffroadCarController>();
         }
-
-        // 3. Update Lock-on HUD status display
-        if (lockOnStatusLabel != null)
+        if (playerHealth == null && carRigidbody != null)
         {
-            bool isLockedOn = carController != null && carController.lockedTarget != null;
-            lockOnStatusLabel.style.display = isLockedOn ? DisplayStyle.Flex : DisplayStyle.None;
+            playerHealth = carRigidbody.GetComponent<PlayerHealth>();
+        }
+
+        // 3. Update Lock-On Cursor overlay
+        if (lockOnCursor != null)
+        {
+            if (carController != null && carController.lockedTarget != null && !carController.lockedTarget.IsDead)
+            {
+                // Align target position (slightly above target center)
+                Vector3 targetWorldPos = carController.lockedTarget.transform.position;
+                
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(targetWorldPos);
+                if (screenPos.z > 0f)
+                {
+                    lockOnCursor.style.display = DisplayStyle.Flex;
+                    Vector2 panelPos = RuntimePanelUtils.CameraTransformWorldToPanel(lockOnCursor.panel, targetWorldPos, Camera.main);
+                    lockOnCursor.style.left = panelPos.x;
+                    lockOnCursor.style.top = panelPos.y;
+                }
+                else
+                {
+                    lockOnCursor.style.display = DisplayStyle.None;
+                }
+            }
+            else
+            {
+                lockOnCursor.style.display = DisplayStyle.None;
+            }
+        }
+
+        // 4. Update Energy (Health) bar display
+        if (playerHealth != null)
+        {
+            float hpPct = (playerHealth.CurrentHealth / playerHealth.MaxHealth) * 100f;
+            if (energyBarFill != null)
+            {
+                energyBarFill.style.height = Length.Percent(hpPct);
+            }
+            if (energyText != null)
+            {
+                energyText.text = $"{Mathf.RoundToInt(hpPct)}%";
+            }
+
+            // Show or hide Game Over overlay
+            if (gameOverScreen != null)
+            {
+                gameOverScreen.style.display = playerHealth.IsDead ? DisplayStyle.Flex : DisplayStyle.None;
+            }
         }
 
         if (speedValueLabel == null) return;
 
-        // 4. Compute current forward velocity in meters per second
-        Vector3 forward = carRigidbody.transform.forward;
-        float speedMPS = Vector3.Dot(carRigidbody.linearVelocity, forward);
+        // 4. Compute current absolute movement velocity in meters per second (includes sideways sliding/drifting)
+        float speedMPS = carRigidbody.linearVelocity.magnitude;
 
         // 5. Convert meters per second to kilometers per hour (1 m/s = 3.6 km/h)
         float speedKMH = Mathf.Max(0f, speedMPS * 3.6f);
@@ -59,7 +113,7 @@ public class VehicleHUD : MonoBehaviour
         speedValueLabel.text = Mathf.RoundToInt(speedKMH).ToString();
     }
 
-    private void FindPlayerRigidbody()
+    private void FindPlayerComponents()
     {
         GameObject playerGO = GameObject.FindWithTag("Player");
         if (playerGO == null)
@@ -71,6 +125,7 @@ public class VehicleHUD : MonoBehaviour
         {
             carRigidbody = playerGO.GetComponent<Rigidbody>();
             carController = playerGO.GetComponent<OffroadCarController>();
+            playerHealth = playerGO.GetComponent<PlayerHealth>();
         }
     }
 }

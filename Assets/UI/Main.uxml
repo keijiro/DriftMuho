@@ -4,12 +4,30 @@
     <!-- Full-screen transparent container with picking-mode set to Ignore to allow driving click-throughs -->
     <ui:VisualElement name="screen-root" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-end;" picking-mode="Ignore">
         
+        <!-- Energy (Durability) HUD Card (Bottom-Left Vertical Bar) -->
+        <ui:VisualElement name="energyContainer" class="energy-hud-container" picking-mode="Ignore">
+            <ui:Label text="ENERGY" class="energy-title" />
+            <ui:VisualElement name="energyBarBg" class="energy-bar-bg">
+                <ui:VisualElement name="energyBarFill" class="energy-bar-fill" />
+            </ui:VisualElement>
+            <ui:Label name="energyText" text="100%" class="energy-text" />
+        </ui:VisualElement>
+
         <!-- Speedometer HUD Card -->
         <ui:VisualElement name="speedometer" class="hud-container" picking-mode="Ignore">
             <ui:Label name="speedValue" class="speed-value" text="0" />
             <ui:Label name="speedUnit" class="speed-unit" text="KM/H" />
-            <ui:Label name="lockOnStatus" class="lockon-status" text="AUTO-DRIVE" />
         </ui:VisualElement>
         
-    </ui:VisualElement>
-</ui:UXML>
+        <!-- Game Over Screen Overlay -->
+        <ui:VisualElement name="gameOverScreen" class="gameover-overlay" picking-mode="Ignore">
+            <ui:Label text="VEHICLE DESTROYED" class="gameover-title" />
+            <ui:Label text="CRITICAL SYSTEM FAILURE" class="gameover-subtitle" />
+            <ui:Label text="PRESS [R] TO REBOOT SYSTEM" class="gameover-reboot" />
+        </ui:VisualElement>
+
+        <!-- Dynamic Screen-Space Lock-On Cursor Overlay -->
+        <ui:VisualElement name="lockOnCursor" class="lockon-cursor" picking-mode="Ignore" />
+
+        </ui:VisualElement>
+        </ui:UXML>

@@ -6,7 +6,8 @@
     "jp.keijiro.kino.post-processing.eight.universal": "2.0.1",
     "jp.keijiro.klutter-tools": "2.6.0",
     "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.vehicles": "1.0.0"
+    "com.unity.modules.vehicles": "1.0.0",
+    "com.unity.modules.particlesystem": "1.0.0"
   },
   "scopedRegistries": [
     {

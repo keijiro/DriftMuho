@@ -15,7 +15,11 @@ public class TerrainChunk : MonoBehaviour
     private int targetCount;
     private Material targetMat;
     private Material metalMat;
+    private GameObject dronePrefab;
     private System.Collections.Generic.List<GameObject> spawnedTargets = new System.Collections.Generic.List<GameObject>();
+
+    private Color colorA;
+    private Color colorB;
 
     public Vector2Int Coordinates => coordinates;
 
@@ -33,7 +37,7 @@ public class TerrainChunk : MonoBehaviour
     /// <summary>
     /// Initializes the chunk with its coordinates and parameters, and triggers the procedural mesh generation.
     /// </summary>
-    public void Initialize(Vector2Int coords, float size, int res, Material material, int targetCount, Material targetMat, Material metalMat)
+    public void Initialize(Vector2Int coords, float size, int res, Material material, int targetCount, Material targetMat, Material metalMat, Color colorA, Color colorB, GameObject dronePrefab = null)
     {
         this.coordinates = coords;
         this.chunkSize = size;
@@ -41,6 +45,9 @@ public class TerrainChunk : MonoBehaviour
         this.targetCount = targetCount;
         this.targetMat = targetMat;
         this.metalMat = metalMat;
+        this.colorA = colorA;
+        this.colorB = colorB;
+        this.dronePrefab = dronePrefab;
 
         // Position this GameObject in world space based on chunk coordinates
         transform.position = new Vector3(coords.x * size, 0f, coords.y * size);
@@ -48,6 +55,15 @@ public class TerrainChunk : MonoBehaviour
         meshRenderer.sharedMaterial = material;
 
         GenerateLowPolyMesh();
+    }
+
+    /// <summary>
+    /// Updates the vertex colors used for the checkerboard pattern.
+    /// </summary>
+    public void UpdateColors(Color a, Color b)
+    {
+        this.colorA = a;
+        this.colorB = b;
     }
 
     /// <summary>
@@ -85,6 +101,7 @@ public class TerrainChunk : MonoBehaviour
         Vector3[] vertices = new Vector3[numVertices];
         int[] triangles = new int[numVertices];
         Vector2[] uvs = new Vector2[numVertices];
+        Color[] colors = new Color[numVertices];
 
         int vIndex = 0;
 
@@ -122,35 +139,48 @@ public class TerrainChunk : MonoBehaviour
                 float v0 = (float)z / resolution;
                 float v1 = (float)(z + 1) / resolution;
 
+                // Seamless checkerboard logic using global grid coordinates
+                int globalX = coordinates.x * resolution + x;
+                int globalZ = coordinates.y * resolution + z;
+                int mod = (globalX + globalZ) % 2;
+                if (mod < 0) mod += 2;
+                Color cellColor = (mod == 0) ? colorA : colorB;
+
                 // --- Triangle 1: A -> C -> B (Clockwise) ---
                 vertices[vIndex] = pA;
                 uvs[vIndex] = new Vector2(u0, v0);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
 
                 vertices[vIndex] = pC;
                 uvs[vIndex] = new Vector2(u0, v1);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
 
                 vertices[vIndex] = pB;
                 uvs[vIndex] = new Vector2(u1, v0);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
 
                 // --- Triangle 2: B -> C -> D (Clockwise) ---
                 vertices[vIndex] = pB;
                 uvs[vIndex] = new Vector2(u1, v0);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
 
                 vertices[vIndex] = pC;
                 uvs[vIndex] = new Vector2(u0, v1);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
 
                 vertices[vIndex] = pD;
                 uvs[vIndex] = new Vector2(u1, v1);
+                colors[vIndex] = cellColor;
                 triangles[vIndex] = vIndex;
                 vIndex++;
             }
@@ -159,6 +189,7 @@ public class TerrainChunk : MonoBehaviour
         generatedMesh.vertices = vertices;
         generatedMesh.triangles = triangles;
         generatedMesh.uv = uvs;
+        generatedMesh.colors = colors;
 
         // Recalculating normals with unshared vertices yields perfectly sharp low-poly flat shading!
         generatedMesh.RecalculateNormals();
@@ -176,7 +207,7 @@ public class TerrainChunk : MonoBehaviour
         }
 
         /// <summary>
-        /// Spawns dynamic target dummies at consistent pseudo-random positions inside this chunk.
+        /// Spawns dynamic target dummies (hostile floating drones) at consistent pseudo-random positions inside this chunk.
         /// Uses seed coordinates to keep positions identical when reloading the chunk.
         /// </summary>
         private void SpawnTargets(int count, Material matTarget, Material matMetal)
@@ -200,40 +231,60 @@ public class TerrainChunk : MonoBehaviour
             // Get terrain height
             float wy = TerrainNoise.GetHeight(wx, wz);
 
-            GameObject tRoot = new GameObject($"DynamicTarget_{coordinates.x}_{coordinates.y}_{i}");
-            tRoot.transform.position = new Vector3(wx, wy, wz);
+            GameObject tRoot = new GameObject($"EnemyDrone_{coordinates.x}_{coordinates.y}_{i}");
+            tRoot.transform.position = new Vector3(wx, wy + 1.25f, wz); // Hover initially (Halved from 2.5f to 1.25f)
             tRoot.transform.SetParent(transform);
 
-            // Base cylinder
-            GameObject baseCyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            baseCyl.name = "BaseCylinder";
-            baseCyl.transform.SetParent(tRoot.transform, false);
-            baseCyl.transform.localPosition = new Vector3(0f, 0.6f, 0f);
-            baseCyl.transform.localScale = new Vector3(1.2f, 0.6f, 1.2f);
-            if (matTarget != null) baseCyl.GetComponent<Renderer>().sharedMaterial = matTarget;
-            DestroyImmediate(baseCyl.GetComponent<Collider>());
+            if (dronePrefab != null)
+            {
+                // Instantiate the drone mesh model
+                GameObject droneModel = Instantiate(dronePrefab, tRoot.transform);
+                droneModel.name = "Model_Drone";
+                droneModel.transform.localPosition = Vector3.zero;
+                // Match the original 90-degree look rotation of Drone.glb
+                droneModel.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+                droneModel.transform.localScale = Vector3.one * 3.0f; // Nice physical scale (Doubled from 1.5f to 3.0f)
 
-            // Top sphere
-            GameObject topSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            topSphere.name = "TopSphere";
-            topSphere.transform.SetParent(tRoot.transform, false);
-            topSphere.transform.localPosition = new Vector3(0f, 1.6f, 0f);
-            topSphere.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            if (matMetal != null) topSphere.GetComponent<Renderer>().sharedMaterial = matMetal;
-            DestroyImmediate(topSphere.GetComponent<Collider>());
+                // Use a Sphere Collider enclosing the drone
+                SphereCollider tCol = tRoot.AddComponent<SphereCollider>();
+                tCol.center = Vector3.zero;
+                tCol.radius = 2.0f; // Doubled from 1.0f to 2.0f to match visual scale
+            }
+            else
+            {
+                // Fallback: cylinder/sphere primitive target if prefab is missing
+                GameObject baseCyl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                baseCyl.name = "BaseCylinder";
+                baseCyl.transform.SetParent(tRoot.transform, false);
+                baseCyl.transform.localPosition = new Vector3(0f, 0.6f, 0f);
+                baseCyl.transform.localScale = new Vector3(1.2f, 0.6f, 1.2f);
+                if (matTarget != null) baseCyl.GetComponent<Renderer>().sharedMaterial = matTarget;
+                DestroyImmediate(baseCyl.GetComponent<Collider>());
+
+                GameObject topSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                topSphere.name = "TopSphere";
+                topSphere.transform.SetParent(tRoot.transform, false);
+                topSphere.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+                topSphere.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                if (matMetal != null) topSphere.GetComponent<Renderer>().sharedMaterial = matMetal;
+                DestroyImmediate(topSphere.GetComponent<Collider>());
+
+                BoxCollider tCol = tRoot.AddComponent<BoxCollider>();
+                tCol.center = new Vector3(0f, 1.1f, 0f);
+                tCol.size = new Vector3(1.3f, 2.2f, 1.3f);
+            }
 
             // Physics Rigidbody
             Rigidbody tRb = tRoot.AddComponent<Rigidbody>();
             tRb.mass = 500f;
             tRb.linearDamping = 0.5f;
+            tRb.useGravity = false; // Hovering AI handles gravity/floating
 
-            // Single Box Collider enclosing the whole target
-            BoxCollider tCol = tRoot.AddComponent<BoxCollider>();
-            tCol.center = new Vector3(0f, 1.1f, 0f);
-            tCol.size = new Vector3(1.3f, 2.2f, 1.3f);
-
-            // Target Behavior
+            // Target Behavior (vital for weapon system locking and TakeDamage support)
             tRoot.AddComponent<TargetDummy>();
+
+            // Drone AI Behavior (vital for floating, patrolling, attacking player)
+            tRoot.AddComponent<EnemyDrone>();
 
             spawnedTargets.Add(tRoot);
         }

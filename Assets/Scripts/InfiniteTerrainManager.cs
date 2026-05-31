@@ -23,6 +23,9 @@ public class InfiniteTerrainManager : MonoBehaviour
         [Tooltip("The metal material applied to dummy top spheres")]
         [SerializeField] private Material metalMaterial;
 
+        [Tooltip("Drone prefab used for dynamic targets")]
+        [SerializeField] private GameObject dronePrefab;
+
         [Header("Terrain Roughness / Noise Adjustments")]
         [Tooltip("Maximum height of the hills")]
         [Range(0f, 40f)] [SerializeField] private float terrainHeightMultiplier = 7.0f;
@@ -38,6 +41,10 @@ public class InfiniteTerrainManager : MonoBehaviour
 
         [Tooltip("The flatness threshold. Higher values flatten more of the lower valleys into smooth plains (-1 is fully bumpy, 1 is fully flat)")]
         [Range(-1.0f, 1.0f)] [SerializeField] private float terrainFloorThreshold = -0.3f;
+
+        [Header("Terrain Checkerboard Colors")]
+        [SerializeField] private Color checkerColorA = new Color(0.2f, 0.25f, 0.22f);
+        [SerializeField] private Color checkerColorB = new Color(0.15f, 0.2f, 0.17f);
         #pragma warning restore 0649
 
     private Dictionary<Vector2Int, TerrainChunk> activeChunks = new Dictionary<Vector2Int, TerrainChunk>();
@@ -171,8 +178,14 @@ public class InfiniteTerrainManager : MonoBehaviour
             metalMaterial = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/UI/M_Metal.mat");
             #endif
         }
+        if (dronePrefab == null)
+        {
+            #if UNITY_EDITOR
+            dronePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Models/Drone.glb");
+            #endif
+        }
 
-        chunk.Initialize(coords, chunkSize, resolution, chunkMaterial, targetsPerChunk, targetMaterial, metalMaterial);
+        chunk.Initialize(coords, chunkSize, resolution, chunkMaterial, targetsPerChunk, targetMaterial, metalMaterial, checkerColorA, checkerColorB, dronePrefab);
 
         activeChunks.Add(coords, chunk);
     }
@@ -222,6 +235,7 @@ public class InfiniteTerrainManager : MonoBehaviour
         {
             if (chunk != null)
             {
+                chunk.UpdateColors(checkerColorA, checkerColorB);
                 chunk.Regenerate();
             }
         }
