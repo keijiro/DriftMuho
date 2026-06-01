@@ -13,7 +13,7 @@ Label {
     border-width: 1px;
     border-radius: 4px;
     padding: 3px 8px;
-    width: 220px;
+    width: 180px;
 }
 
 .control-row {
@@ -120,22 +120,38 @@ Label {
 
 .gameover-title {
     color: #ff3c00;
-    font-size: 36px;
-    letter-spacing: 3px;
-    margin-bottom: 2px;
+    font-size: 54px; /* Reduced from 72px for better elegance */
+    letter-spacing: 4px; /* Adjusted spacing */
+    margin-bottom: 12px;
 }
 
-.gameover-subtitle {
+.gameover-score-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px; /* Slightly compacted spacing */
+}
+
+.gameover-score-label {
     color: #ffffff;
-    font-size: 14px;
+    font-size: 22px; /* Adjusted to fit the longer cool title smoothly */
     letter-spacing: 2px;
-    margin-bottom: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+.gameover-score-value {
+    color: #ffcc00;
+    font-size: 30px; /* Matched the new label size balance */
+    margin: 0;
+    padding: 0;
+    margin-left: 12px;
 }
 
 .gameover-reboot {
     color: #ffcc00;
-    font-size: 12px;
-    letter-spacing: 1px;
+    font-size: 24px; /* Kept at readable double size */
+    letter-spacing: 2px;
 }
 
 /* Dynamic Lock-On Cursor Overlay */
@@ -148,4 +164,55 @@ Label {
     display: none;
     margin-left: -48px;
     margin-top: -48px;
+}
+
+/* Defeated Enemies Counter (Top-Right) */
+.defeated-counter-container {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(18, 18, 22, 0.75);
+    border-color: #ff6000;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 3px 8px;
+    width: 90px;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.defeated-label {
+    color: #ffcc00;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+}
+
+.defeated-value {
+    color: #ffffff;
+    font-size: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Full-Screen Transition Overlay */
+.transition-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #1a1a1a; /* Solid deep gray */
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.transition-title {
+    width: 640px;
+    height: 320px;
+    background-image: url("project://database/Assets/Sprites/Title.png");
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 1;
 }

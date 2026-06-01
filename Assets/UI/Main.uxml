@@ -16,6 +16,12 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- Defeated Enemies Counter (Top-Right) -->
+        <ui:VisualElement name="defeatedCounter" class="defeated-counter-container" picking-mode="Ignore">
+            <ui:Label text="KILLS" class="defeated-label" />
+            <ui:Label name="defeatedValue" text="0" class="defeated-value" />
+        </ui:VisualElement>
+
         <!-- Energy (Durability) HUD Card (Circular Gauge) -->
         <ui:VisualElement name="energyContainer" class="energy-hud-container" picking-mode="Ignore">
             <RadialGauge name="energyGauge" style="position: absolute; width: 100%; height: 100%;" line-width="12" gauge-color="#ff3c00" />
@@ -34,12 +40,20 @@
         <!-- Game Over Screen Overlay -->
         <ui:VisualElement name="gameOverScreen" class="gameover-overlay" picking-mode="Ignore">
             <ui:Label text="VEHICLE DESTROYED" class="gameover-title" />
-            <ui:Label text="CRITICAL SYSTEM FAILURE" class="gameover-subtitle" />
-            <ui:Label text="PRESS [R] TO REBOOT SYSTEM" class="gameover-reboot" />
+            <ui:VisualElement class="gameover-score-row" picking-mode="Ignore">
+                <ui:Label text="TOTAL CONFIRMED KILLS:" class="gameover-score-label" />
+                <ui:Label name="gameOverScoreValue" text="0" class="gameover-score-value" />
+            </ui:VisualElement>
+            <ui:Label text="PRESS [R] TO RETRY" class="gameover-reboot" />
         </ui:VisualElement>
 
         <!-- Dynamic Screen-Space Lock-On Cursor Overlay -->
         <ui:VisualElement name="lockOnCursor" class="lockon-cursor" picking-mode="Ignore" />
+
+        <!-- Full-screen solid transition overlay for intro/outro animations -->
+        <ui:VisualElement name="transitionOverlay" class="transition-overlay" picking-mode="Ignore">
+            <ui:VisualElement name="titleImage" class="transition-title" picking-mode="Ignore" />
+        </ui:VisualElement>
 
         </ui:VisualElement>
         </ui:UXML>

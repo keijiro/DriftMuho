@@ -120,26 +120,14 @@ public class TargetDummy : MonoBehaviour
         // Visual Explosion Debris
         CreateDeathExplosion();
 
-        // Hide target meshes instead of destroying, to allow respawning
-        SetVisualsActive(false);
-
-        // Respawn after 3 seconds
-        StartCoroutine(RespawnTimer());
-    }
-
-    private void SetVisualsActive(bool active)
-    {
-        var colliders = GetComponentsInChildren<Collider>();
-        foreach (var col in colliders)
+        // Increment the defeated enemies count
+        if (DifficultyManager.Instance != null)
         {
-            col.enabled = active;
+            DifficultyManager.Instance.IncrementDefeatedEnemies();
         }
 
-        var renderers = GetComponentsInChildren<Renderer>();
-        foreach (var rend in renderers)
-        {
-            rend.enabled = active;
-        }
+        // Destroy this enemy object immediately
+        Destroy(gameObject);
     }
 
     private void CreateDeathExplosion()
@@ -173,33 +161,4 @@ public class TargetDummy : MonoBehaviour
 
         Destroy(expRoot, 3.0f);
     }
-
-    private IEnumerator RespawnTimer()
-    {
-        yield return new WaitForSeconds(3f);
-
-        // Reset state
-        currentHealth = maxHealth;
-        transform.position = originalPosition;
-        transform.rotation = originalRotation;
-        
-        var rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
-
-        // Restore original materials if they were overridden
-        foreach (var backup in rendererBackups)
-        {
-            if (backup.renderer != null)
-            {
-                backup.renderer.sharedMaterials = backup.originalMaterials;
-            }
-        }
-
-        SetVisualsActive(true);
-        isDead = false;
     }
-}

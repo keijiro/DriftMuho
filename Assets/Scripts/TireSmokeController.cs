@@ -66,7 +66,7 @@ public class TireSmokeController : MonoBehaviour
             skidAudioSource.clip = skidClip;
             skidAudioSource.loop = true;
             skidAudioSource.playOnAwake = false;
-            skidAudioSource.spatialBlend = 1.0f; // 3D sound originating from the car tires
+            skidAudioSource.spatialBlend = 0.0f; // Played as 2D sound for direct cockpit feedback
             skidAudioSource.minDistance = 5f;
             skidAudioSource.maxDistance = 60f;
             skidAudioSource.volume = 0f;

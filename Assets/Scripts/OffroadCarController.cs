@@ -225,7 +225,7 @@ public class OffroadCarController : MonoBehaviour
         // Validate target active status and distance
         if (lockedTarget != null)
         {
-            bool isTargetDeadOrDestroyed = lockedTarget == null || !lockedTarget.gameObject.activeInHierarchy || lockedTarget.IsDead;
+            bool isTargetDeadOrDestroyed = !lockedTarget.gameObject.activeInHierarchy || lockedTarget.IsDead;
             if (isTargetDeadOrDestroyed)
             {
                 UnlockTarget();
@@ -237,6 +237,10 @@ public class OffroadCarController : MonoBehaviour
             {
                 UnlockTarget();
             }
+        }
+        else if (activeJoint != null)
+        {
+            UnlockTarget();
         }
         }
 
@@ -310,7 +314,7 @@ public class OffroadCarController : MonoBehaviour
 
             public void UnlockTarget()
             {
-            if (lockedTarget != null)
+            if (lockedTarget != null || activeJoint != null)
             {
                 Debug.Log("[Lock-On] Target unlocked.");
                 lockedTarget = null;

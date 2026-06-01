@@ -55,7 +55,15 @@ public class PlayerHealth : MonoBehaviour
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
             {
-                RebootSystem();
+                VehicleHUD hud = Object.FindFirstObjectByType<VehicleHUD>();
+                if (hud != null)
+                {
+                    hud.StartRestartTransition();
+                }
+                else
+                {
+                    RebootSystem();
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip playerDamage;
     [SerializeField] private AudioClip playerDeath;
     [SerializeField] private AudioClip lockOnBeep;
+    [SerializeField] private AudioClip titleJingle;
 
     [Header("Blend Settings")]
     [Range(0f, 1f)] [SerializeField] private float enemyShotSpatialBlend = 0.5f; // 0 = 2D (no fade), 1 = 3D (directional & distance fade)
@@ -53,7 +54,7 @@ public class SoundManager : MonoBehaviour
     {
         if (Instance != null) 
         {
-            PlayDefaultClip(Instance.gunShot, position, 0.9f);
+            PlayCustom3DClip(Instance.gunShot, position, 0.9f, 0.0f); // Played as 2D (0.0f spatial blend)
         }
     }
 
@@ -61,7 +62,7 @@ public class SoundManager : MonoBehaviour
     {
         if (Instance != null) 
         {
-            PlayDefaultClip(Instance.playerDamage, position, 0.9f);
+            PlayCustom3DClip(Instance.playerDamage, position, 0.9f, 0.0f); // Played as 2D (0.0f spatial blend)
         }
     }
 
@@ -86,6 +87,14 @@ public class SoundManager : MonoBehaviour
         if (Instance != null)
         {
             PlayCustom3DClip(Instance.lockOnBeep, Vector3.zero, 0.8f, 0.0f); // 2D at 80% volume
+        }
+    }
+
+    public static void PlayTitleJingle()
+    {
+        if (Instance != null && Instance.titleJingle != null)
+        {
+            PlayCustom3DClip(Instance.titleJingle, Vector3.zero, 1.0f, 0.0f); // 2D at 100% volume
         }
     }
 

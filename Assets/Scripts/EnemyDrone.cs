@@ -24,6 +24,11 @@ public class EnemyDrone : MonoBehaviour
     private TargetDummy targetDummy;
     private Transform playerTransform;
 
+    private float CurrentPatrolSpeed => patrolSpeed * (DifficultyManager.Instance != null ? DifficultyManager.Instance.CurrentDifficultyFactor : 1f);
+    private float CurrentDetectionRange => detectionRange * (DifficultyManager.Instance != null ? DifficultyManager.Instance.CurrentDifficultyFactor : 1f);
+    private float CurrentFireRate => Mathf.Max(0.4f, fireRate / (DifficultyManager.Instance != null ? DifficultyManager.Instance.CurrentDifficultyFactor : 1f));
+    private float CurrentBulletSpeed => bulletSpeed * (DifficultyManager.Instance != null ? DifficultyManager.Instance.CurrentDifficultyFactor : 1f);
+
     private State state = State.Patrol;
     private Vector3 spawnOrigin;
     private Vector3 patrolTarget;
@@ -75,10 +80,11 @@ public class EnemyDrone : MonoBehaviour
 
         // 2. Perform AI state switching based on distance
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        float currentDetectionRange = CurrentDetectionRange;
 
         if (state == State.Patrol)
         {
-            if (distanceToPlayer <= detectionRange)
+            if (distanceToPlayer <= currentDetectionRange)
             {
                 state = State.Attack;
                 StopAllCoroutines();
@@ -88,7 +94,7 @@ public class EnemyDrone : MonoBehaviour
         else if (state == State.Attack)
         {
             // Hysteresis of 1.3x detection range to prevent flickering states
-            if (distanceToPlayer > detectionRange * 1.3f)
+            if (distanceToPlayer > currentDetectionRange * 1.3f)
             {
                 state = State.Patrol;
                 PickRandomPatrolTarget();
@@ -98,7 +104,7 @@ public class EnemyDrone : MonoBehaviour
                 // Handle shooting
                 if (Time.time >= nextFireTime)
                 {
-                    nextFireTime = Time.time + fireRate;
+                    nextFireTime = Time.time + CurrentFireRate;
                     FireAtPlayer();
                 }
             }
@@ -122,6 +128,7 @@ public class EnemyDrone : MonoBehaviour
         velocity.y = yError * 4f; // Proportional feedback
 
         Vector3 horizontalMove = Vector3.zero;
+        float currentPatrolSpeed = CurrentPatrolSpeed;
 
         if (state == State.Patrol)
         {
@@ -130,7 +137,7 @@ public class EnemyDrone : MonoBehaviour
 
             if (toTarget.magnitude > 1.0f)
             {
-                horizontalMove = toTarget.normalized * patrolSpeed;
+                horizontalMove = toTarget.normalized * currentPatrolSpeed;
             }
             else
             {
@@ -149,11 +156,11 @@ public class EnemyDrone : MonoBehaviour
             // Maintain tactical combat distance (between 8 and 16 meters)
             if (dist > 15f)
             {
-                horizontalMove = toPlayer.normalized * (patrolSpeed * 0.7f);
+                horizontalMove = toPlayer.normalized * (currentPatrolSpeed * 0.7f);
             }
             else if (dist < 8f)
             {
-                horizontalMove = -toPlayer.normalized * (patrolSpeed * 0.7f);
+                horizontalMove = -toPlayer.normalized * (currentPatrolSpeed * 0.7f);
             }
         }
 
@@ -235,7 +242,7 @@ public class EnemyDrone : MonoBehaviour
         Vector3 targetCenter = playerTransform.position + Vector3.up * 0.5f;
         Vector3 fireDir = (targetCenter - spawnPos).normalized;
 
-        bulletRb.linearVelocity = fireDir * bulletSpeed;
+        bulletRb.linearVelocity = fireDir * CurrentBulletSpeed;
 
         // Wire up the damage handling script
         bullet.AddComponent<EnemyBullet>();

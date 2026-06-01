@@ -312,7 +312,6 @@ GameObject:
   - component: {fileID: 410612687}
   - component: {fileID: 410612691}
   - component: {fileID: 410612692}
-  - component: {fileID: 410612693}
   - component: {fileID: 410612695}
   - component: {fileID: 410612694}
   m_Layer: 0
@@ -488,14 +487,6 @@ MonoBehaviour:
   maxEmissionRate: 300
   skidClip: {fileID: 8300000, guid: d071f1c708dbb48a4a37f4b420344810, type: 3}
   maxSkidVolume: 0.5
---- !u!81 &410612693
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 410612685}
-  m_Enabled: 1
 --- !u!114 &410612694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1367,6 +1358,7 @@ GameObject:
   - component: {fileID: 1411473416}
   - component: {fileID: 1411473420}
   - component: {fileID: 1411473421}
+  - component: {fileID: 1411473422}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1540,6 +1532,14 @@ MonoBehaviour:
   <Downsampling>k__BackingField: 5
   <Opacity>k__BackingField: 1
   _shader: {fileID: 4800000, guid: 11e94cd5c3fe34771a02e77528668f69, type: 3}
+--- !u!81 &1411473422
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411473415}
+  m_Enabled: 1
 --- !u!1 &1420078256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1653,6 +1653,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1696840218}
   - component: {fileID: 1696840217}
+  - component: {fileID: 1696840219}
   m_Layer: 0
   m_Name: TerrainManager
   m_TagString: Untagged
@@ -1703,6 +1704,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1696840219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696840216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d426e57413a434293b5aac34f6cece68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
+  targetDuration: 240
+  difficultyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.3
+      inSlope: 0
+      outSlope: 1.7
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 2
+      inSlope: 1.7
+      outSlope: 0.79999995
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1872066543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1845,6 +1883,7 @@ MonoBehaviour:
   playerDamage: {fileID: 8300000, guid: 023d7a0e285b346e49421e0965d7ed41, type: 3}
   playerDeath: {fileID: 8300000, guid: e0914394b66b8467c9a32e297be3d3e6, type: 3}
   lockOnBeep: {fileID: 8300000, guid: 93f620f85c587461789132bfa72651b7, type: 3}
+  titleJingle: {fileID: 8300000, guid: 6fb29944c5fc44f23abeabe90fa2f141, type: 3}
   enemyShotSpatialBlend: 0.8
   gunHitSpatialBlend: 0.6
   enemyDestroyedSpatialBlend: 0.3
