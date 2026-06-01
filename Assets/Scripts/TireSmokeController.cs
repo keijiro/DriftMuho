@@ -1,5 +1,6 @@
 using UnityEngine;
 
+#pragma warning disable 0649
 public class TireSmokeController : MonoBehaviour
 {
     [Header("Smoke Settings")]
@@ -8,6 +9,10 @@ public class TireSmokeController : MonoBehaviour
     [SerializeField] private float maxSlipSpeed = 10.0f;     // Side velocity (m/s) for maximum smoke density
     [SerializeField] private float maxEmissionRate = 75f;    // Max particles per second
 
+    [Header("Skid Sound Settings")]
+    [SerializeField] private AudioClip skidClip;
+    [SerializeField] private float maxSkidVolume = 0.5f;     // Maximum volume for tire slip sound
+
     private OffroadCarController carController;
     private Rigidbody carRigidbody;
 
@@ -15,10 +20,14 @@ public class TireSmokeController : MonoBehaviour
     private ParticleSystem rightSmokePS;
     private Material smokeMaterial;
 
+    private AudioSource skidAudioSource;
+    private float currentSkidIntensity = 0f;
+
     private void Reset()
     {
         #if UNITY_EDITOR
         smokeTexture = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Sprites/Smoke.png");
+        skidClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SkidNoise.wav");
         #endif
     }
 
@@ -40,6 +49,27 @@ public class TireSmokeController : MonoBehaviour
             #if UNITY_EDITOR
             smokeTexture = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Sprites/Smoke.png");
             #endif
+        }
+
+        // Auto-load skid clip if missing
+        if (skidClip == null)
+        {
+            #if UNITY_EDITOR
+            skidClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SkidNoise.wav");
+            #endif
+        }
+
+        // Configure looping AudioSource for skid sounds
+        if (skidClip != null)
+        {
+            skidAudioSource = gameObject.AddComponent<AudioSource>();
+            skidAudioSource.clip = skidClip;
+            skidAudioSource.loop = true;
+            skidAudioSource.playOnAwake = false;
+            skidAudioSource.spatialBlend = 1.0f; // 3D sound originating from the car tires
+            skidAudioSource.minDistance = 5f;
+            skidAudioSource.maxDistance = 60f;
+            skidAudioSource.volume = 0f;
         }
 
         // Create URP Particles Unlit Material
@@ -132,15 +162,46 @@ public class TireSmokeController : MonoBehaviour
 
     private void Update()
     {
-        UpdateWheelSmoke(carController.RearLeft.collider, leftSmokePS);
-        UpdateWheelSmoke(carController.RearRight.collider, rightSmokePS);
+        float leftIntensity = UpdateWheelSmoke(carController.RearLeft.collider, leftSmokePS);
+        float rightIntensity = UpdateWheelSmoke(carController.RearRight.collider, rightSmokePS);
+
+        float maxIntensity = Mathf.Max(leftIntensity, rightIntensity);
+        UpdateSkidSound(maxIntensity);
     }
 
-    private void UpdateWheelSmoke(WheelCollider wc, ParticleSystem ps)
+    private void UpdateSkidSound(float maxIntensity)
     {
-        if (wc == null || ps == null) return;
+        if (skidAudioSource == null) return;
+
+        // Smoothly interpolate the intensity to avoid clicks/pops
+        currentSkidIntensity = Mathf.Lerp(currentSkidIntensity, maxIntensity, 12f * Time.deltaTime);
+
+        if (currentSkidIntensity > 0.01f)
+        {
+            if (!skidAudioSource.isPlaying)
+            {
+                skidAudioSource.Play();
+            }
+            skidAudioSource.volume = currentSkidIntensity * maxSkidVolume;
+            // Slightly pitch up as the slip intensity increases to make it sound more aggressive
+            skidAudioSource.pitch = Mathf.Lerp(0.85f, 1.15f, currentSkidIntensity);
+        }
+        else
+        {
+            if (skidAudioSource.isPlaying)
+            {
+                skidAudioSource.Stop();
+            }
+            skidAudioSource.volume = 0f;
+        }
+    }
+
+    private float UpdateWheelSmoke(WheelCollider wc, ParticleSystem ps)
+    {
+        if (wc == null || ps == null) return 0f;
 
         var emission = ps.emission;
+        float intensityFactor = 0f;
 
         if (wc.isGrounded && wc.GetGroundHit(out WheelHit hit))
         {
@@ -157,7 +218,7 @@ public class TireSmokeController : MonoBehaviour
             if (lateralSlipSpeed > slipThreshold)
             {
                 // Linearly interpolate slip intensity to scale emission rate
-                float intensityFactor = Mathf.InverseLerp(slipThreshold, maxSlipSpeed, lateralSlipSpeed);
+                intensityFactor = Mathf.InverseLerp(slipThreshold, maxSlipSpeed, lateralSlipSpeed);
                 emission.rateOverTime = intensityFactor * maxEmissionRate;
             }
             else
@@ -170,6 +231,8 @@ public class TireSmokeController : MonoBehaviour
             // Tire is in mid-air: stop all smoke emission instantly
             emission.rateOverTime = 0f;
         }
+
+        return intensityFactor;
     }
 
     private void OnDestroy()
@@ -180,4 +243,6 @@ public class TireSmokeController : MonoBehaviour
         }
     }
 }
+#pragma warning restore 0649
+
 // Force compile under newly resolved ParticleSystemModule context

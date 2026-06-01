@@ -3,6 +3,39 @@ Label {
     -unity-font-definition: url("project://database/Assets/UI/Jersey_10/Jersey10-Regular SDF.asset");
 }
 
+/* Controls Guide HUD Card (Top-Left) */
+.controls-guide-container {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: rgba(18, 18, 22, 0.75);
+    border-color: #ff6000;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 3px 8px;
+    width: 220px;
+}
+
+.control-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.control-key {
+    color: #ffcc00;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+}
+
+.control-action {
+    color: #ffffff;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+}
+
 /* Speedometer HUD Card (Simple text-only) */
 .speedometer-container {
     position: absolute;

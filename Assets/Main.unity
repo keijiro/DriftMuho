@@ -312,6 +312,9 @@ GameObject:
   - component: {fileID: 410612687}
   - component: {fileID: 410612691}
   - component: {fileID: 410612692}
+  - component: {fileID: 410612693}
+  - component: {fileID: 410612695}
+  - component: {fileID: 410612694}
   m_Layer: 0
   m_Name: PlayerCar
   m_TagString: Player
@@ -396,7 +399,7 @@ MonoBehaviour:
   centerOfMassOffset: {x: 0, y: -0.3, z: 0.05}
   downforce: 800
   flipThresholdTime: 2
-  maxLockOnDistance: 25
+  maxLockOnDistance: 40
   lockOnMinDistance: 3
   lockOnFovAngle: 120
   lockOnSidewaysFrictionFront: 0.8
@@ -483,6 +486,134 @@ MonoBehaviour:
   slipThreshold: 1.8
   maxSlipSpeed: 20
   maxEmissionRate: 300
+  skidClip: {fileID: 8300000, guid: d071f1c708dbb48a4a37f4b420344810, type: 3}
+  maxSkidVolume: 0.5
+--- !u!81 &410612693
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410612685}
+  m_Enabled: 1
+--- !u!114 &410612694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410612685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e945231c010d42b1a8d7a5ea7befa23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarEngineSound
+  engineLoopClip: {fileID: 8300000, guid: 7c02e7cfbfa5e4b28baef960270ab3cf, type: 3}
+  minPitch: 1
+  maxPitch: 4
+  minVolume: 0.2
+  maxVolume: 0.7
+  throttlePitchBoost: 0.2
+  throttleVolumeBoost: 0.08
+  driftPitchBoost: 1
+  smoothSpeed: 6
+--- !u!82 &410612695
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410612685}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 7c02e7cfbfa5e4b28baef960270ab3cf, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &430922935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1236,7 +1367,6 @@ GameObject:
   - component: {fileID: 1411473416}
   - component: {fileID: 1411473420}
   - component: {fileID: 1411473421}
-  - component: {fileID: 1411473422}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1410,14 +1540,6 @@ MonoBehaviour:
   <Downsampling>k__BackingField: 5
   <Opacity>k__BackingField: 1
   _shader: {fileID: 4800000, guid: 11e94cd5c3fe34771a02e77528668f69, type: 3}
---- !u!81 &1411473422
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1411473415}
-  m_Enabled: 1
 --- !u!1 &1420078256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1563,7 +1685,7 @@ MonoBehaviour:
   terrainNoiseScale: 0.01
   noiseOctaves: 4
   terrainPersistence: 0.8
-  terrainFloorThreshold: 0.2
+  terrainFloorThreshold: 0.15
   checkerColorA: {r: 0.06363475, g: 0.20754719, b: 0.0701953, a: 1}
   checkerColorB: {r: 0.016153438, g: 0.103773594, b: 0.040219262, a: 1}
 --- !u!4 &1696840218
@@ -1696,6 +1818,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1992909448}
   - component: {fileID: 1992909447}
+  - component: {fileID: 1992909449}
   m_Layer: 0
   m_Name: SoundManager
   m_TagString: Untagged
@@ -1715,10 +1838,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f35e01288e8a475ea68b54ff978d65f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
-  enemyShot: {fileID: 8300000, guid: 72c7f257768d54ea1a091d87941977b6, type: 3}
+  enemyShot: {fileID: 8300000, guid: 35951c8bb71ad4dab85bd02596c4ef2d, type: 3}
   gunHit: {fileID: 8300000, guid: ae33cb947b6d64cbf800ddb5f83483be, type: 3}
   gunShot: {fileID: 8300000, guid: ef52853e2afc045848da947006312b91, type: 3}
-  playerDamage: {fileID: 8300000, guid: cfd097723dec143d4bf78c6b430d8996, type: 3}
+  enemyDestroyed: {fileID: 8300000, guid: b27349f72db2646e49ee717e49264e01, type: 3}
+  playerDamage: {fileID: 8300000, guid: 023d7a0e285b346e49421e0965d7ed41, type: 3}
+  playerDeath: {fileID: 8300000, guid: e0914394b66b8467c9a32e297be3d3e6, type: 3}
+  lockOnBeep: {fileID: 8300000, guid: 93f620f85c587461789132bfa72651b7, type: 3}
+  enemyShotSpatialBlend: 0.8
+  gunHitSpatialBlend: 0.6
+  enemyDestroyedSpatialBlend: 0.3
+  enemyDestroyedPitch: 0.85
 --- !u!4 &1992909448
 Transform:
   m_ObjectHideFlags: 0
@@ -1734,6 +1864,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1992909449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992909446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c121417dac6f458c8bb7febfab00b96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlashEffectManager
+  flashIntensity: 50
+  flashDuration: 0.2
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  defaultFlashPitch: 15
+  mainDirectionalLight: {fileID: 430922936}
 --- !u!1 &2014890580
 GameObject:
   m_ObjectHideFlags: 0

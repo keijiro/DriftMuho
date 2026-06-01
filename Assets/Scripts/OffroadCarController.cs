@@ -48,7 +48,6 @@ public class OffroadCarController : MonoBehaviour
     private Rigidbody rb;
     private float motorInput;
     private float steerInput;
-    private bool brakeInput;
     
     private float timeUpsideDown;
     private float currentSteerAngle;
@@ -61,6 +60,7 @@ public class OffroadCarController : MonoBehaviour
     public WheelInfo RearLeft => rearLeft;
     public WheelInfo RearRight => rearRight;
     public float TargetCruisingSpeed => targetCruisingSpeed;
+    public float MotorInput => motorInput;
 
     // Lock-on runtime states
     public TargetDummy lockedTarget { get; private set; }
@@ -127,23 +127,10 @@ public class OffroadCarController : MonoBehaviour
         if (lockedTarget == null) return;
 
         // Reset WheelCollider torques to 0 during lock-on orbit (avoid fighting the LookAt)
-        // If the player presses handbrake (Space), we can apply braking torque.
-        bool isBraking = brakeInput;
-        if (isBraking)
-        {
-            if (frontLeft.collider != null) { frontLeft.collider.motorTorque = 0f; frontLeft.collider.brakeTorque = brakeTorque; }
-            if (frontRight.collider != null) { frontRight.collider.motorTorque = 0f; frontRight.collider.brakeTorque = brakeTorque; }
-            if (rearLeft.collider != null) { rearLeft.collider.motorTorque = 0f; rearLeft.collider.brakeTorque = brakeTorque; }
-            if (rearRight.collider != null) { rearRight.collider.motorTorque = 0f; rearRight.collider.brakeTorque = brakeTorque; }
-            return;
-        }
-        else
-        {
-            if (frontLeft.collider != null) { frontLeft.collider.motorTorque = 0f; frontLeft.collider.brakeTorque = 0f; }
-            if (frontRight.collider != null) { frontRight.collider.motorTorque = 0f; frontRight.collider.brakeTorque = 0f; }
-            if (rearLeft.collider != null) { rearLeft.collider.motorTorque = 0f; rearLeft.collider.brakeTorque = 0f; }
-            if (rearRight.collider != null) { rearRight.collider.motorTorque = 0f; rearRight.collider.brakeTorque = 0f; }
-        }
+        if (frontLeft.collider != null) { frontLeft.collider.motorTorque = 0f; frontLeft.collider.brakeTorque = 0f; }
+        if (frontRight.collider != null) { frontRight.collider.motorTorque = 0f; frontRight.collider.brakeTorque = 0f; }
+        if (rearLeft.collider != null) { rearLeft.collider.motorTorque = 0f; rearLeft.collider.brakeTorque = 0f; }
+        if (rearRight.collider != null) { rearRight.collider.motorTorque = 0f; rearRight.collider.brakeTorque = 0f; }
 
         // Calculate tangent direction of current orbital motion
         Vector3 toTarget = lockedTarget.transform.position - transform.position;
@@ -214,9 +201,6 @@ public class OffroadCarController : MonoBehaviour
         steerInput = 0f;
         if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) steerInput += 1f;
         if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) steerInput -= 1f;
-
-        // Handbrake / Hard braking via Space
-        brakeInput = keyboard.spaceKey.isPressed;
     }
 
     private void HandleLockOnInput()
@@ -317,9 +301,12 @@ public class OffroadCarController : MonoBehaviour
                 // Capture the entry speed and clamp to a sensible minimum to allow drifting from standstill
                 driftEntrySpeed = Mathf.Max(rb.linearVelocity.magnitude, minimumDriftSpeed);
 
+                // Play Lock-On beep sound effect (2D at 80% volume)
+                SoundManager.PlayLockOnBeep();
+
                 Debug.Log($"[Lock-On] Locked onto target: {lockedTarget.name} with ConfigurableJoint (radius {targetOrbitRadius:F1}m). Target speed to maintain: {driftEntrySpeed:F1} m/s");
-            }
-            }
+                }
+                }
 
             public void UnlockTarget()
             {
@@ -360,8 +347,7 @@ public class OffroadCarController : MonoBehaviour
         float currentSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
 
         // Check if player is trying to brake (moving forward but pressing S, or moving backward but pressing W)
-        bool isBraking = brakeInput || 
-                         (motorInput < 0f && currentSpeed > 0.5f) || 
+        bool isBraking = (motorInput < 0f && currentSpeed > 0.5f) || 
                          (motorInput > 0f && currentSpeed < -0.5f);
 
         // Calculate dynamic torque scaling factor to achieve rapid acceleration up to cruising speed,

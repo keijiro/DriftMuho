@@ -118,6 +118,9 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true;
 
+        // Play player death/destruction SFX
+        SoundManager.PlayPlayerDeath(transform.position);
+
         // Restore original materials if they were overridden
         if (flashCoroutine != null) StopCoroutine(flashCoroutine);
         foreach (var backup in rendererBackups)

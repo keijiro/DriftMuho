@@ -111,6 +111,12 @@ public class TargetDummy : MonoBehaviour
     {
         isDead = true;
 
+        // Play enemy destroyed sound effect
+        SoundManager.PlayEnemyDestroyed(transform.position);
+
+        // Trigger dramatic directional flash towards player
+        FlashEffectManager.TriggerFlash(transform.position);
+
         // Visual Explosion Debris
         CreateDeathExplosion();
 

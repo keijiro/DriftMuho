@@ -4,11 +4,23 @@
     <!-- Full-screen transparent container with picking-mode set to Ignore to allow driving click-throughs -->
     <ui:VisualElement name="screen-root" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-end;" picking-mode="Ignore">
         
+        <!-- Controls Guide HUD Card (Top-Left) -->
+        <ui:VisualElement name="controlsGuide" class="controls-guide-container" picking-mode="Ignore">
+            <ui:VisualElement class="control-row" picking-mode="Ignore">
+                <ui:Label text="[W A S D]" class="control-key" />
+                <ui:Label text="DRIVE &amp; STEER" class="control-action" />
+            </ui:VisualElement>
+            <ui:VisualElement class="control-row" picking-mode="Ignore">
+                <ui:Label text="[E]" class="control-key" />
+                <ui:Label text="LOCK &lt;-&gt; UNLOCK" class="control-action" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- Energy (Durability) HUD Card (Circular Gauge) -->
         <ui:VisualElement name="energyContainer" class="energy-hud-container" picking-mode="Ignore">
             <RadialGauge name="energyGauge" style="position: absolute; width: 100%; height: 100%;" line-width="12" gauge-color="#ff3c00" />
             <ui:VisualElement class="energy-text-container" picking-mode="Ignore">
-                <ui:Label text="ENERGY" class="energy-title" />
+                <ui:Label text="SHIELD" class="energy-title" />
                 <ui:Label name="energyText" text="100%" class="energy-text" />
             </ui:VisualElement>
         </ui:VisualElement>
