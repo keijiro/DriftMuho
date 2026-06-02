@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.unity.assistant-desktop": "file:../../../Library/Application Support/UnityHub/cocreate-bundled-packages/com.unity.assistant-desktop",
     "com.unity.build-report-inspector": "0.3.0-preview",
     "com.unity.cloud.gltfast": "6.19.0",
     "com.unity.inputsystem": "1.19.0",
