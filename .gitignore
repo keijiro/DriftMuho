@@ -21,3 +21,6 @@ Desktop.ini
 /*.apk
 /*.tgz
 /*_DoNotShip
+
+/Assets/BuildReports
+/Assets/BuildReports.meta

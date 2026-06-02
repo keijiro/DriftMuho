@@ -4,6 +4,7 @@ public class EnemyBullet : MonoBehaviour
 {
     [SerializeField] private float lifetime = 4.0f;
     [SerializeField] private float damage = 10f;
+    public Material sparkMaterial;
 
     private void Start()
     {
@@ -53,10 +54,9 @@ public class EnemyBullet : MonoBehaviour
             p.transform.localScale = Vector3.one * Random.Range(0.08f, 0.15f);
 
             var renderer = p.GetComponent<Renderer>();
-            if (renderer != null)
+            if (renderer != null && sparkMaterial != null)
             {
-                renderer.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-                renderer.material.color = new Color(1f, 0.4f, 0f); // Neon Orange
+                renderer.sharedMaterial = sparkMaterial;
             }
 
             var col = p.GetComponent<Collider>();

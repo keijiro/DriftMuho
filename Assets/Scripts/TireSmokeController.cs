@@ -18,7 +18,7 @@ public class TireSmokeController : MonoBehaviour
 
     private ParticleSystem leftSmokePS;
     private ParticleSystem rightSmokePS;
-    private Material smokeMaterial;
+    [SerializeField] private Material smokeMaterial;
 
     private AudioSource skidAudioSource;
     private float currentSkidIntensity = 0f;
@@ -72,28 +72,10 @@ public class TireSmokeController : MonoBehaviour
             skidAudioSource.volume = 0f;
         }
 
-        // Create URP Particles Unlit Material
-        smokeMaterial = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
-        
-        // Configure material for alpha-blended transparency in URP
-        smokeMaterial.SetFloat("_Surface", 1.0f); // 1.0f = Transparent surface
-        smokeMaterial.SetFloat("_Blend", 0.0f);   // 0.0f = Alpha blend
-        smokeMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        smokeMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        smokeMaterial.SetFloat("_ZWrite", 0.0f);
-        smokeMaterial.DisableKeyword("_ALPHATEST_ON");
-        smokeMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        smokeMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-        if (smokeTexture != null)
-        {
-            smokeMaterial.SetTexture("_BaseMap", smokeTexture);
-        }
-
         // Create smoke emitters as children of each rear wheel collider's pivot
         leftSmokePS = CreateSmokeEmitter(carController.RearLeft.collider, "LeftTireSmokeTrail");
         rightSmokePS = CreateSmokeEmitter(carController.RearRight.collider, "RightTireSmokeTrail");
-    }
+        }
 
     private ParticleSystem CreateSmokeEmitter(WheelCollider wc, string emitterName)
     {
@@ -110,7 +92,7 @@ public class TireSmokeController : MonoBehaviour
         ParticleSystemRenderer psRenderer = emitterGO.GetComponent<ParticleSystemRenderer>();
 
         // Apply custom URP unlit material
-        psRenderer.material = smokeMaterial;
+        psRenderer.sharedMaterial = smokeMaterial;
 
         // Configure Particle System Main Module
         var main = ps.main;
@@ -237,12 +219,8 @@ public class TireSmokeController : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (smokeMaterial != null)
-        {
-            Destroy(smokeMaterial);
-        }
     }
-}
+    }
 #pragma warning restore 0649
 
 // Force compile under newly resolved ParticleSystemModule context

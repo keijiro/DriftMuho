@@ -19,7 +19,8 @@ public class TargetDummy : MonoBehaviour
     }
 
     private List<RendererBackup> rendererBackups = new List<RendererBackup>();
-    private Material flashMaterial;
+    public Material flashMaterial;
+    public Material debrisBaseMaterial;
 
     private Color originalColor = Color.red;
     private Renderer targetRenderer;
@@ -31,10 +32,6 @@ public class TargetDummy : MonoBehaviour
         currentHealth = maxHealth;
         originalPosition = transform.position;
         originalRotation = transform.rotation;
-
-        // Create a custom flash material at runtime using URP Unlit shader
-        flashMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-        flashMaterial.color = new Color(1.0f, 0.9f, 0.0f); // Bright yellow
 
         // Cache all renderers and their original materials
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
@@ -137,6 +134,7 @@ public class TargetDummy : MonoBehaviour
 
         // Spawn a ring of flying colored debris
         int parts = 15;
+        MaterialPropertyBlock mpb = new MaterialPropertyBlock();
         for (int i = 0; i < parts; i++)
         {
             GameObject p = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -144,10 +142,12 @@ public class TargetDummy : MonoBehaviour
             p.transform.localScale = Vector3.one * Random.Range(0.2f, 0.4f);
 
             var renderer = p.GetComponent<Renderer>();
-            if (renderer != null)
+            if (renderer != null && debrisBaseMaterial != null)
             {
-                renderer.sharedMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-                renderer.sharedMaterial.color = originalColor;
+                renderer.sharedMaterial = debrisBaseMaterial;
+                mpb.Clear();
+                mpb.SetColor("_BaseColor", originalColor);
+                renderer.SetPropertyBlock(mpb);
             }
 
             var rb = p.AddComponent<Rigidbody>();

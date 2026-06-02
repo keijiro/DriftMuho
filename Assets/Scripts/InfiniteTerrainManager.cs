@@ -45,6 +45,12 @@ public class InfiniteTerrainManager : MonoBehaviour
         [Header("Terrain Checkerboard Colors")]
         [SerializeField] private Color checkerColorA = new Color(0.2f, 0.25f, 0.22f);
         [SerializeField] private Color checkerColorB = new Color(0.15f, 0.2f, 0.17f);
+
+        [Header("Target/Drone Optimization Materials")]
+        [SerializeField] private Material dummyFlashMaterial;
+        [SerializeField] private Material dummyDebrisBaseMaterial;
+        [SerializeField] private Material droneBulletMaterial;
+        [SerializeField] private Material droneSparkMaterial;
         #pragma warning restore 0649
 
     private Dictionary<Vector2Int, TerrainChunk> activeChunks = new Dictionary<Vector2Int, TerrainChunk>();
@@ -185,7 +191,8 @@ public class InfiniteTerrainManager : MonoBehaviour
             #endif
         }
 
-        chunk.Initialize(coords, chunkSize, resolution, chunkMaterial, targetsPerChunk, targetMaterial, metalMaterial, checkerColorA, checkerColorB, dronePrefab);
+        chunk.Initialize(coords, chunkSize, resolution, chunkMaterial, targetsPerChunk, targetMaterial, metalMaterial, checkerColorA, checkerColorB, dronePrefab,
+            dummyFlashMaterial, dummyDebrisBaseMaterial, droneBulletMaterial, droneSparkMaterial);
 
         activeChunks.Add(coords, chunk);
     }

@@ -18,6 +18,11 @@ public class TerrainChunk : MonoBehaviour
     private GameObject dronePrefab;
     private System.Collections.Generic.List<GameObject> spawnedTargets = new System.Collections.Generic.List<GameObject>();
 
+    private Material dummyFlashMaterial;
+    private Material dummyDebrisBaseMaterial;
+    private Material droneBulletMaterial;
+    private Material droneSparkMaterial;
+
     private Color colorA;
     private Color colorB;
 
@@ -37,7 +42,8 @@ public class TerrainChunk : MonoBehaviour
     /// <summary>
     /// Initializes the chunk with its coordinates and parameters, and triggers the procedural mesh generation.
     /// </summary>
-    public void Initialize(Vector2Int coords, float size, int res, Material material, int targetCount, Material targetMat, Material metalMat, Color colorA, Color colorB, GameObject dronePrefab = null)
+    public void Initialize(Vector2Int coords, float size, int res, Material material, int targetCount, Material targetMat, Material metalMat, Color colorA, Color colorB, GameObject dronePrefab,
+        Material dummyFlashMaterial, Material dummyDebrisBaseMaterial, Material droneBulletMaterial, Material droneSparkMaterial)
     {
         this.coordinates = coords;
         this.chunkSize = size;
@@ -48,6 +54,10 @@ public class TerrainChunk : MonoBehaviour
         this.colorA = colorA;
         this.colorB = colorB;
         this.dronePrefab = dronePrefab;
+        this.dummyFlashMaterial = dummyFlashMaterial;
+        this.dummyDebrisBaseMaterial = dummyDebrisBaseMaterial;
+        this.droneBulletMaterial = droneBulletMaterial;
+        this.droneSparkMaterial = droneSparkMaterial;
 
         // Position this GameObject in world space based on chunk coordinates
         transform.position = new Vector3(coords.x * size, 0f, coords.y * size);
@@ -281,10 +291,14 @@ public class TerrainChunk : MonoBehaviour
             tRb.useGravity = false; // Hovering AI handles gravity/floating
 
             // Target Behavior (vital for weapon system locking and TakeDamage support)
-            tRoot.AddComponent<TargetDummy>();
+            var dummy = tRoot.AddComponent<TargetDummy>();
+            dummy.flashMaterial = dummyFlashMaterial;
+            dummy.debrisBaseMaterial = dummyDebrisBaseMaterial;
 
             // Drone AI Behavior (vital for floating, patrolling, attacking player)
-            tRoot.AddComponent<EnemyDrone>();
+            var drone = tRoot.AddComponent<EnemyDrone>();
+            drone.bulletMaterial = droneBulletMaterial;
+            drone.sparkMaterial = droneSparkMaterial;
 
             spawnedTargets.Add(tRoot);
         }

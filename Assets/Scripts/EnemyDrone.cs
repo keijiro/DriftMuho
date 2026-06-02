@@ -19,6 +19,8 @@ public class EnemyDrone : MonoBehaviour
     [SerializeField] private float detectionRange = 26f;
     [SerializeField] private float fireRate = 1.6f;
     [SerializeField] private float bulletSpeed = 22f;
+    public Material bulletMaterial;
+    public Material sparkMaterial;
 
     private Rigidbody rb;
     private TargetDummy targetDummy;
@@ -225,10 +227,9 @@ public class EnemyDrone : MonoBehaviour
 
         // Stylize it as bright orange/red neon bullet using unlit shader
         var renderer = bullet.GetComponent<Renderer>();
-        if (renderer != null)
+        if (renderer != null && bulletMaterial != null)
         {
-            renderer.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-            renderer.material.color = new Color(1.0f, 0.35f, 0.0f); // Sharp Orange
+            renderer.sharedMaterial = bulletMaterial;
         }
 
         // Trigger and Physics Setup
@@ -245,7 +246,8 @@ public class EnemyDrone : MonoBehaviour
         bulletRb.linearVelocity = fireDir * CurrentBulletSpeed;
 
         // Wire up the damage handling script
-        bullet.AddComponent<EnemyBullet>();
+        var enemyBullet = bullet.AddComponent<EnemyBullet>();
+        enemyBullet.sparkMaterial = sparkMaterial;
     }
 
     private void ResetDrone()

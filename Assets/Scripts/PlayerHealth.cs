@@ -18,7 +18,10 @@ public class PlayerHealth : MonoBehaviour
     }
 
     private List<RendererBackup> rendererBackups = new List<RendererBackup>();
-    private Material flashMaterial;
+    #pragma warning disable 0649
+    [SerializeField] private Material flashMaterial;
+    [SerializeField] private Material debrisBaseMaterial;
+    #pragma warning restore 0649
     private Coroutine flashCoroutine;
 
     public float MaxHealth => maxHealth;
@@ -28,10 +31,6 @@ public class PlayerHealth : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
-
-        // Create custom URP Unlit yellow flash material
-        flashMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-        flashMaterial.color = new Color(1.0f, 0.9f, 0.0f); // Bright yellow
 
         // Cache all renderers and their original materials
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
@@ -188,6 +187,7 @@ public class PlayerHealth : MonoBehaviour
             new Color(0.3f, 0.3f, 0.3f)   // Gray exhaust
         };
 
+        MaterialPropertyBlock mpb = new MaterialPropertyBlock();
         for (int i = 0; i < parts; i++)
         {
             GameObject p = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -195,10 +195,12 @@ public class PlayerHealth : MonoBehaviour
             p.transform.localScale = Vector3.one * Random.Range(0.25f, 0.6f);
 
             var renderer = p.GetComponent<Renderer>();
-            if (renderer != null)
+            if (renderer != null && debrisBaseMaterial != null)
             {
-                renderer.sharedMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-                renderer.sharedMaterial.color = debrisColors[Random.Range(0, debrisColors.Length)];
+                renderer.sharedMaterial = debrisBaseMaterial;
+                mpb.Clear();
+                mpb.SetColor("_BaseColor", debrisColors[Random.Range(0, debrisColors.Length)]);
+                renderer.SetPropertyBlock(mpb);
             }
 
             // Remove collider so they don't block physics

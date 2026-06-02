@@ -9,6 +9,8 @@ public class CarWeapon : MonoBehaviour
     [SerializeField] private Transform muzzlePoint;
     [SerializeField] private float fireRate = 0.15f; // Time between shots in seconds
     [SerializeField] private float bulletSpeed = 40f;
+    [SerializeField] private Material bulletMaterial;
+    [SerializeField] private Material sparkMaterial;
 
     [Header("Turret Rotation (Optional)")]
     [SerializeField] private Transform turretPivot;
@@ -100,10 +102,9 @@ public class CarWeapon : MonoBehaviour
 
             // Make it look yellow/orange
             var renderer = bulletObj.GetComponent<Renderer>();
-            if (renderer != null)
+            if (renderer != null && bulletMaterial != null)
             {
-                renderer.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-                renderer.material.color = new Color(1.0f, 0.6f, 0.0f); // Bright orange
+                renderer.sharedMaterial = bulletMaterial;
             }
 
             // Ensure collider is a trigger
@@ -111,7 +112,8 @@ public class CarWeapon : MonoBehaviour
             if (col != null) col.isTrigger = true;
 
             // Add Bullet component
-            bulletObj.AddComponent<Bullet>();
+            var bulletComp = bulletObj.AddComponent<Bullet>();
+            bulletComp.sparkMaterial = sparkMaterial;
         }
 
         // Set bullet speed/direction via Rigidbody
