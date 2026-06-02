@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.unity.assistant-desktop": {
-      "version": "file:../../../Library/Application Support/UnityHub/cocreate-bundled-packages/com.unity.assistant-desktop",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
     "com.unity.build-report-inspector": {
       "version": "0.3.0-preview",
       "depth": 0,
